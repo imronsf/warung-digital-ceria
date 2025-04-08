@@ -14,4 +14,5 @@ export type ProductFormValues = {
   stock: number;
   category: string;
   image?: string;
+  imageFile?: File;
 };

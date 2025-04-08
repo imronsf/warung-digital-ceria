@@ -67,6 +67,16 @@ const ProductPage = () => {
   };
 
   const handleFormSubmit = (data: ProductFormValues) => {
+    let imageUrl = data.image;
+    
+    // If it's a data URL from FileReader, we would normally upload this to a server
+    // For demo purposes, we'll just use the data URL directly
+    if (data.imageFile) {
+      // In a real app, you would upload the file to a server and get a URL back
+      // imageUrl = await uploadImageToServer(data.imageFile);
+      console.log("Image file received:", data.imageFile.name);
+    }
+
     if (editingProduct) {
       const updated: Product[] = products.map(product => 
         product.id === editingProduct.id 
@@ -76,7 +86,7 @@ const ProductPage = () => {
               price: data.price, 
               stock: data.stock, 
               category: data.category, 
-              image: data.image || "/placeholder.svg" 
+              image: imageUrl || "/placeholder.svg" 
             } 
           : product
       );
@@ -95,7 +105,7 @@ const ProductPage = () => {
         price: data.price,
         stock: data.stock, 
         category: data.category,
-        image: data.image || "/placeholder.svg"
+        image: imageUrl || "/placeholder.svg"
       };
       
       const updated = [...products, newProduct];

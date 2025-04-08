@@ -2,6 +2,7 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
+import { useState, useRef } from "react";
 import {
   Form,
   FormControl,
@@ -20,6 +21,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { DialogFooter } from "@/components/ui/dialog";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Product, ProductFormValues } from "@/types/product";
 import { categories } from "@/constants/product";
 
@@ -38,6 +40,11 @@ interface ProductFormProps {
 }
 
 const ProductForm = ({ product, onClose, onSubmit }: ProductFormProps) => {
+  const [imagePreview, setImagePreview] = useState<string | null>(
+    product ? product.image : null
+  );
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  
   const form = useForm<ProductFormValues>({
     resolver: zodResolver(productSchema),
     defaultValues: {
@@ -48,6 +55,27 @@ const ProductForm = ({ product, onClose, onSubmit }: ProductFormProps) => {
       image: product ? product.image : "/placeholder.svg",
     },
   });
+
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    
+    // Store the file in the form
+    form.setValue("imageFile", file);
+    
+    // Preview the image
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      const result = reader.result as string;
+      setImagePreview(result);
+      form.setValue("image", result);
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const triggerFileInput = () => {
+    fileInputRef.current?.click();
+  };
 
   const handleSubmit = (data: ProductFormValues) => {
     onSubmit(data);
@@ -133,13 +161,31 @@ const ProductForm = ({ product, onClose, onSubmit }: ProductFormProps) => {
           name="image"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Gambar</FormLabel>
-              <FormControl>
-                <Input 
-                  disabled 
-                  value="Gunakan placeholder (demo)"
-                />
-              </FormControl>
+              <FormLabel>Gambar Produk</FormLabel>
+              <div className="flex flex-col space-y-4 items-center">
+                <Avatar className="h-24 w-24">
+                  <AvatarImage src={imagePreview || field.value} alt="Preview gambar" />
+                  <AvatarFallback>IMG</AvatarFallback>
+                </Avatar>
+                <div>
+                  <Button 
+                    type="button" 
+                    variant="outline" 
+                    onClick={triggerFileInput}
+                    className="w-full"
+                  >
+                    Pilih Gambar
+                  </Button>
+                  <input
+                    type="file"
+                    ref={fileInputRef}
+                    onChange={handleImageUpload}
+                    accept="image/*"
+                    className="hidden"
+                  />
+                  <Input type="hidden" {...field} />
+                </div>
+              </div>
               <FormMessage />
             </FormItem>
           )}
