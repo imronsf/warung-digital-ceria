@@ -15,22 +15,30 @@ const ProductPage = () => {
   const [products, setProducts] = useState<Product[]>(initialProducts);
   const [filteredProducts, setFilteredProducts] = useState<Product[]>(products);
   const [searchQuery, setSearchQuery] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("all");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [selectedProductId, setSelectedProductId] = useState<number | null>(null);
 
   const searchProducts = () => {
-    if (!searchQuery) {
-      setFilteredProducts(products);
-      return;
+    let filtered = [...products];
+    
+    // Apply text search if query exists
+    if (searchQuery) {
+      const query = searchQuery.toLowerCase();
+      filtered = filtered.filter(product => 
+        product.name.toLowerCase().includes(query) || 
+        product.category.toLowerCase().includes(query)
+      );
     }
-
-    const query = searchQuery.toLowerCase();
-    const filtered = products.filter(product => 
-      product.name.toLowerCase().includes(query) || 
-      product.category.toLowerCase().includes(query)
-    );
+    
+    // Apply category filter if not "all"
+    if (selectedCategory !== "all") {
+      filtered = filtered.filter(product => 
+        product.category === selectedCategory
+      );
+    }
     
     setFilteredProducts(filtered);
   };
@@ -119,6 +127,8 @@ const ProductPage = () => {
     }
     
     setIsDialogOpen(false);
+    // Re-apply filters after updating
+    searchProducts();
   };
 
   return (
@@ -128,6 +138,12 @@ const ProductPage = () => {
         setSearchQuery={setSearchQuery}
         searchProducts={searchProducts}
         openCreateDialog={openCreateDialog}
+        selectedCategory={selectedCategory}
+        setSelectedCategory={(category) => {
+          setSelectedCategory(category);
+          // Apply filter immediately when category changes
+          setTimeout(searchProducts, 0);
+        }}
       />
       
       <ProductTable
