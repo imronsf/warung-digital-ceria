@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -49,7 +48,6 @@ import {
 } from "@/components/ui/alert-dialog";
 import { useToast } from "@/hooks/use-toast";
 
-// Tipe data
 interface Product {
   id: number;
   name: string;
@@ -59,7 +57,6 @@ interface Product {
   category: string;
 }
 
-// Data produk dummy
 const initialProducts: Product[] = [
   { id: 1, name: "Kopi Hitam", price: 15000, stock: 20, image: "/placeholder.svg", category: "Minuman" },
   { id: 2, name: "Kopi Latte", price: 20000, stock: 15, image: "/placeholder.svg", category: "Minuman" },
@@ -98,7 +95,7 @@ const ProductPage = () => {
       price: 0,
       stock: 0,
       category: "",
-      image: "/placeholder.svg", // Default placeholder image
+      image: "/placeholder.svg",
     }
   });
 
@@ -164,10 +161,16 @@ const ProductPage = () => {
 
   const onSubmit = (data: ProductFormValues) => {
     if (editingProduct) {
-      // Update existing product
-      const updated = products.map(product => 
+      const updated: Product[] = products.map(product => 
         product.id === editingProduct.id 
-          ? { ...product, ...data } 
+          ? { 
+              id: product.id, 
+              name: data.name, 
+              price: data.price, 
+              stock: data.stock, 
+              category: data.category, 
+              image: data.image || "/placeholder.svg" 
+            } 
           : product
       );
       
@@ -179,10 +182,13 @@ const ProductPage = () => {
         description: `${data.name} berhasil diperbarui`,
       });
     } else {
-      // Create new product
-      const newProduct = {
+      const newProduct: Product = {
         id: Math.max(0, ...products.map(p => p.id)) + 1,
-        ...data,
+        name: data.name,
+        price: data.price,
+        stock: data.stock, 
+        category: data.category,
+        image: data.image || "/placeholder.svg"
       };
       
       const updated = [...products, newProduct];
@@ -226,7 +232,6 @@ const ProductPage = () => {
         </div>
       </div>
       
-      {/* Products Table */}
       <div className="border rounded-md overflow-hidden">
         <Table>
           <TableHeader>
@@ -291,7 +296,6 @@ const ProductPage = () => {
         </Table>
       </div>
       
-      {/* Create/Edit Product Dialog */}
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
@@ -409,7 +413,6 @@ const ProductPage = () => {
         </DialogContent>
       </Dialog>
       
-      {/* Delete Confirmation */}
       <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
