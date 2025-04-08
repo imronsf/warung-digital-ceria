@@ -1,3 +1,4 @@
+
 # Welcome to your Lovable project
 
 ## Project info
@@ -32,23 +33,29 @@ cd <YOUR_PROJECT_NAME>
 # Step 3: Install the necessary dependencies.
 npm i
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
+# Step 4: Set up the database
+# - Create a MySQL database as described in database-schema.sql
+# - Copy .env.example to .env and update the database credentials
+
+# Step 5: Start the development server with auto-reloading and an instant preview.
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+## Setting up the MySQL Database
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+1. Create a new MySQL database for the application:
+```sql
+CREATE DATABASE umkm_pos;
+```
 
-**Use GitHub Codespaces**
+2. Import the schema from the database-schema.sql file:
+```sh
+mysql -u your_username -p umkm_pos < database-schema.sql
+```
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+3. Configure your database connection:
+   - Copy `.env.example` to `.env`
+   - Update the database credentials in the `.env` file
 
 ## What technologies are used for this project?
 
@@ -59,10 +66,16 @@ This project is built with:
 - React
 - shadcn-ui
 - Tailwind CSS
+- MySQL (for database)
 
 ## How can I deploy this project?
 
 Simply open [Lovable](https://lovable.dev/projects/eb8f0714-ab4c-4ae7-b756-6140f2866a6b) and click on Share -> Publish.
+
+For production deployment with MySQL, you'll need to:
+1. Set up a MySQL database server
+2. Configure the database connection in your environment variables
+3. Deploy the application to your hosting provider
 
 ## Can I connect a custom domain to my Lovable project?
 
